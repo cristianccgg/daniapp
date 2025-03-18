@@ -531,17 +531,32 @@ const StudentTableApp = ({ classId, onReturnToDashboard }) => {
               <div className="overflow-x-auto">
                 <table className="border-collapse w-full">
                   <StudentTableHeader classId={classId} />
+
                   <tbody>
                     {students.length > 0 ? (
-                      students.map((student) => (
-                        <StudentRow
-                          key={student.id}
-                          student={student}
-                          handleInputChange={handleInputChange}
-                          addEmojiToStudent={addEmojiToStudent}
-                          removeParticipacionEmoji={removeParticipacionEmoji}
-                        />
-                      ))
+                      <>
+                        {students.map((student) => (
+                          <StudentRow
+                            key={student.id}
+                            student={student}
+                            handleInputChange={handleInputChange}
+                            addEmojiToStudent={addEmojiToStudent}
+                            removeParticipacionEmoji={removeParticipacionEmoji}
+                          />
+                        ))}
+                        {/* Agregar filas vacías si hay menos de 5 estudiantes */}
+                        {students.length < 5 &&
+                          Array(5 - students.length)
+                            .fill(0)
+                            .map((_, i) => (
+                              <tr key={`empty-${i}`} className="h-12">
+                                <td
+                                  colSpan={7}
+                                  className="border border-gray-200"
+                                ></td>
+                              </tr>
+                            ))}
+                      </>
                     ) : (
                       <tr>
                         <td
