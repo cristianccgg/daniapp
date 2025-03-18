@@ -12,14 +12,14 @@ const CombinedEmojiPanel = ({ selectedEmoji, handleEmojiSelect }) => {
       <h3 className="font-bold mb-4 text-center">Emojis y Significado</h3>
 
       {/* Grupos de emojis con significado y función de arrastre */}
-      <div className="space-y-4">
+      <div className="space-y-1">
         {emojiGroups.map((group) => (
           <div key={group.title} className="bg-white p-2 rounded shadow">
             <h4 className="font-semibold text-sm mb-2">{group.title}</h4>
 
             {/* Renderizado especial para el grupo Participación (solo emojis) */}
             {group.title === "Participación" ? (
-              <div className="grid grid-cols-4 gap-2 p-1">
+              <div className="grid grid-cols-4 gap-1 p-0">
                 {group.emojis.map((emojiItem) => (
                   <DraggableEmoji
                     key={emojiItem.id}

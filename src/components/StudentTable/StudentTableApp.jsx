@@ -17,7 +17,6 @@ import StudentRow from "./StudentRow";
 import CombinedEmojiPanel from "./CombinedEmojiPanel";
 import ActionButtons from "./ActionButtons";
 import EmojiSettings from "../Settings/EmojiSettings";
-import EmojiLegend from "./EmojiLegend"; // Importar el nuevo componente
 
 // Utilidades y constantes
 import {
@@ -355,7 +354,7 @@ const StudentTableApp = ({ classId, onReturnToDashboard }) => {
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="w-full mx-auto bg-white rounded-lg shadow-lg p-6">
-        {/* Encabezado y botones de Dashboard y Configuración*/}
+        {/* Encabezado y botón de Dashboard (sin el botón de configuración de emojis) */}
         <div className="flex items-center justify-between mb-6">
           <div className="w-1/4">
             <button
@@ -368,21 +367,16 @@ const StudentTableApp = ({ classId, onReturnToDashboard }) => {
           <div className="w-2/4 flex justify-center">
             <h1 className="text-3xl font-bold text-center">{classInfo.name}</h1>
           </div>
-          <div className="w-1/4 flex justify-end">
-            <button
-              onClick={() => setShowEmojiSettings(true)}
-              className="px-4 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600 transition-colors flex items-center"
-            >
-              <Settings size={18} className="mr-2" />
-              Configurar Emojis
-            </button>
-          </div>
+          <div className="w-1/4"></div>{" "}
+          {/* Espacio vacío donde estaba el botón de emojis */}
         </div>
 
-        {/* Información de la clase */}
-        <div className="w-full flex gap-4 pb-4">
-          <div className="w-full">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        {/* Contenido principal con estructura de dos columnas */}
+        <div className="flex flex-col md:flex-row gap-4">
+          {/* Columna izquierda: Info de clase + tabla (75%) */}
+          <div className="md:w-3/4">
+            {/* Info de nivel y Wall of Fame */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
               {/* Información de nivel, semana y día */}
               <div className="space-y-1 text-gray-700">
                 {!editingClassInfo ? (
@@ -477,8 +471,8 @@ const StudentTableApp = ({ classId, onReturnToDashboard }) => {
                 )}
               </div>
 
-              {/* Wall of Fame y tema de la semana */}
-              <div className="text-center">
+              {/* Wall of Fame y tema de la semana (2 columnas) */}
+              <div className="text-center md:col-span-2">
                 <h2 className="font-bold text-lg mb-2">WALL OF FAME</h2>
                 <div className="flex justify-center items-center space-x-2">
                   <span className="text-3xl">⭐</span>
@@ -527,69 +521,71 @@ const StudentTableApp = ({ classId, onReturnToDashboard }) => {
               </div>
             </div>
 
+            {/* Tabla de estudiantes justo debajo del header */}
             <DndContext
               sensors={sensors}
               collisionDetection={closestCenter}
               onDragEnd={handleDragEnd}
               modifiers={[restrictToParentElement]}
             >
-              <div className="flex flex-col md:flex-row gap-4">
-                <div className="w-full">
-                  {/* Tabla de estudiantes */}
-                  <div className="tabla-container mt-4 w-full">
-                    <div className="overflow-x-auto">
-                      <table className="border-collapse w-full min-h-52">
-                        <StudentTableHeader />
-                        <tbody>
-                          {students.length > 0 ? (
-                            students.map((student) => (
-                              <StudentRow
-                                key={student.id}
-                                student={student}
-                                handleInputChange={handleInputChange}
-                                addEmojiToStudent={addEmojiToStudent}
-                                removeParticipacionEmoji={
-                                  removeParticipacionEmoji
-                                }
-                              />
-                            ))
-                          ) : (
-                            <tr>
-                              <td
-                                colSpan={7}
-                                className="text-center p-4 text-gray-500"
-                              >
-                                No hay estudiantes. Haz clic en "Agregar
-                                Estudiante" para comenzar.
-                              </td>
-                            </tr>
-                          )}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-
-                  {/* Leyenda de emojis para captura de pantalla */}
-                  <EmojiLegend />
-                </div>
-
-                {/* Panel de emojis */}
-                <div className="md:w-80 flex-shrink-0">
-                  <CombinedEmojiPanel
-                    selectedEmoji={selectedEmoji}
-                    handleEmojiSelect={handleEmojiSelect}
-                  />
-                </div>
+              <div className="overflow-x-auto">
+                <table className="border-collapse w-full">
+                  <StudentTableHeader />
+                  <tbody>
+                    {students.length > 0 ? (
+                      students.map((student) => (
+                        <StudentRow
+                          key={student.id}
+                          student={student}
+                          handleInputChange={handleInputChange}
+                          addEmojiToStudent={addEmojiToStudent}
+                          removeParticipacionEmoji={removeParticipacionEmoji}
+                        />
+                      ))
+                    ) : (
+                      <tr>
+                        <td
+                          colSpan={7}
+                          className="text-center p-4 text-gray-500"
+                        >
+                          No hay estudiantes. Haz clic en "Agregar Estudiante"
+                          para comenzar.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
               </div>
             </DndContext>
+          </div>
 
-            {/* Botones de acción */}
+          {/* Columna derecha: Panel de emojis (25%) */}
+          <div className="md:w-1/4">
+            <CombinedEmojiPanel
+              selectedEmoji={selectedEmoji}
+              handleEmojiSelect={handleEmojiSelect}
+            />
+          </div>
+        </div>
+
+        {/* Botones de control separados al final de la página (fuera del área principal) */}
+        <div className="mt-0 pt-0 border-t border-gray-200">
+          <div className="flex flex-wrap gap-3 items-center">
             <ActionButtons
               addNewStudent={addNewStudent}
               removeLastStudent={removeLastStudent}
               clearAllExceptNames={clearAllExceptNames}
               clearAll={clearAll}
             />
+
+            {/* Botón de configuración de emojis añadido a los controles */}
+            <button
+              onClick={() => setShowEmojiSettings(true)}
+              className="flex items-center mt-6 px-4 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600 transition-colors"
+            >
+              <Settings size={18} className="mr-2" />
+              Configurar Emojis
+            </button>
           </div>
         </div>
       </div>

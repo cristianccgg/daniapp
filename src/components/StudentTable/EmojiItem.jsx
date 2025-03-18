@@ -2,7 +2,7 @@
 import React from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { X, Image } from "lucide-react";
+import { X } from "lucide-react";
 import { useEmojis } from "./EmojisProvider";
 
 // Componente para un emoji individual arrastrable
@@ -64,10 +64,10 @@ export const ParticipacionEmoji = ({ emoji, id, onRemove, type }) => {
         <img
           src={imageUrl}
           alt={type || "emoji"}
-          className="w-10 h-10 object-contain" // Aumentado de w-6 h-6 a w-10 h-10
+          className="w-10 h-10 object-contain"
         />
       ) : (
-        <span className="text-3xl">{emoji}</span> // Aumentado de text-xl a text-3xl
+        <span className="text-3xl">{emoji}</span>
       )}
       <button
         onClick={onRemove}

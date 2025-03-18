@@ -161,16 +161,16 @@ export const EMOJI_GROUPS = [
         emoji: EMOJIS.objetivo,
         label: "Cumplió con el objetivo de la semana",
       },
-      {
-        id: "excelente",
-        emoji: EMOJIS.excelente,
-        label: "Excelente participación",
-      },
-      {
-        id: "bienHecho",
-        emoji: EMOJIS.bienHecho,
-        label: "Buen trabajo",
-      },
+      // {
+      //   id: "excelente",
+      //   emoji: EMOJIS.excelente,
+      //   label: "Excelente participación",
+      // },
+      // {
+      //   id: "bienHecho",
+      //   emoji: EMOJIS.bienHecho,
+      //   label: "Buen trabajo",
+      // },
     ],
   },
 ];

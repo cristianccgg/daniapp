@@ -19,10 +19,36 @@ export const EmojisProvider = ({ children }) => {
     const savedCustomEmojis = loadFromLocalStorage("customEmojis", {});
     setCustomEmojis(savedCustomEmojis);
 
+    // Verificar que tenemos datos completos y válidos
     const savedEmojiGroups = loadFromLocalStorage("emojiGroups", []);
-    if (savedEmojiGroups.length > 0) {
+
+    let gruposValidos =
+      savedEmojiGroups &&
+      Array.isArray(savedEmojiGroups) &&
+      savedEmojiGroups.length > 0;
+
+    // Verificar que el grupo de Participación tenga 12 emojis
+    if (gruposValidos) {
+      const participacionGroup = savedEmojiGroups.find(
+        (g) => g.title === "Participación"
+      );
+      if (
+        !participacionGroup ||
+        !participacionGroup.emojis ||
+        participacionGroup.emojis.length < 12
+      ) {
+        console.warn(
+          "Grupo de Participación incompleto, usando valores predeterminados"
+        );
+        gruposValidos = false;
+      }
+    }
+
+    if (gruposValidos) {
+      console.log("Usando grupos guardados:", savedEmojiGroups);
       setCustomEmojiGroups(savedEmojiGroups);
     } else {
+      console.log("Usando grupos por defecto:", EMOJI_GROUPS);
       setCustomEmojiGroups(EMOJI_GROUPS);
     }
 
@@ -66,10 +92,15 @@ export const EmojisProvider = ({ children }) => {
 
   // Obtener grupos de emojis actualizados con los personalizados
   const getEmojiGroups = () => {
-    // Usar updateCounter para forzar la regeneración
-    console.log("Obteniendo grupos de emojis actualizado:", updateCounter);
+    // Asegurar que usamos grupos válidos
+    const groups =
+      customEmojiGroups &&
+      Array.isArray(customEmojiGroups) &&
+      customEmojiGroups.length > 0
+        ? customEmojiGroups
+        : EMOJI_GROUPS;
 
-    return customEmojiGroups.map((group) => ({
+    return groups.map((group) => ({
       ...group,
       emojis: group.emojis.map((emojiItem) => ({
         ...emojiItem,
@@ -86,6 +117,26 @@ export const EmojisProvider = ({ children }) => {
     setEmojiImages(newImages);
 
     if (newGroups && newGroups.length > 0) {
+      // Verificar que el grupo de Participación está completo
+      const participacionGroup = newGroups.find(
+        (g) => g.title === "Participación"
+      );
+      if (!participacionGroup || participacionGroup.emojis.length < 12) {
+        console.warn("Grupo de Participación incompleto en los grupos nuevos");
+        // En caso de problemas, podemos mantener la estructura pero completarla
+        const defaultParticipacionGroup = EMOJI_GROUPS.find(
+          (g) => g.title === "Participación"
+        );
+        if (defaultParticipacionGroup && participacionGroup) {
+          // Combinar manteniendo los emojis existentes y completando los que faltan
+          participacionGroup.emojis = participacionGroup.emojis.concat(
+            defaultParticipacionGroup.emojis.slice(
+              participacionGroup.emojis.length
+            )
+          );
+        }
+      }
+
       setCustomEmojiGroups(newGroups);
     }
 
