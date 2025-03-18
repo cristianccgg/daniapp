@@ -76,26 +76,43 @@ const EmojiSettings = ({ isOpen, onClose, onSave }) => {
   const [selectedEmoji, setSelectedEmoji] = useState("");
   const [imageURLs, setImageURLs] = useState({});
   const [selectedTab, setSelectedTab] = useState("emojis"); // "emojis" o "images"
+  const [loaded, setLoaded] = useState(false);
 
-  useEffect(() => {
+  // Función para cargar los datos iniciales
+  const loadInitialData = async () => {
     // Cargar emojis personalizados si existen
     const savedEmojis = loadFromLocalStorage("customEmojis", {});
     setCustomEmojis(savedEmojis);
 
-    // Cargar grupos de emojis
-    const savedEmojiGroups = loadFromLocalStorage("emojiGroups", []);
-    if (savedEmojiGroups.length > 0) {
-      setEmojiGroups(savedEmojiGroups);
-    } else {
-      // Cargar los grupos por defecto desde constants.js si no hay personalizados
-      import("../StudentTable/constants").then((constants) => {
+    try {
+      // Cargar grupos de emojis
+      const savedEmojiGroups = loadFromLocalStorage("emojiGroups", []);
+      if (savedEmojiGroups.length > 0) {
+        console.log("Usando grupos guardados:", savedEmojiGroups);
+        setEmojiGroups(savedEmojiGroups);
+      } else {
+        // Cargar los grupos por defecto desde constants.js
+        const constants = await import("../StudentTable/constants");
+        console.log("Usando grupos por defecto:", constants.EMOJI_GROUPS);
         setEmojiGroups(constants.EMOJI_GROUPS);
-      });
+      }
+    } catch (error) {
+      console.error("Error al cargar grupos de emojis:", error);
+      // Intentar cargar al menos un array vacío como fallback
+      setEmojiGroups([]);
     }
 
     // Cargar URLs de imágenes si existen
     const savedImageURLs = loadFromLocalStorage("customEmojiImages", {});
     setImageURLs(savedImageURLs);
+
+    setLoaded(true);
+  };
+
+  useEffect(() => {
+    if (isOpen) {
+      loadInitialData();
+    }
   }, [isOpen]);
 
   const handleEmojiChange = (emojiId, newEmoji) => {
@@ -150,7 +167,12 @@ const EmojiSettings = ({ isOpen, onClose, onSave }) => {
     return emojiItem.emoji;
   };
 
-  if (!isOpen) return null;
+  if (!isOpen || !loaded) return null;
+
+  // Encontrar el grupo de participación (debe ser el primero)
+  const participacionGroup = emojiGroups.find(
+    (g) => g.title === "Participación"
+  );
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -211,16 +233,15 @@ const EmojiSettings = ({ isOpen, onClose, onSave }) => {
               </div>
             </div>
 
-            <div className="mb-6">
-              <h3 className="font-semibold mb-2">Grupos de Emojis</h3>
-              {emojiGroups.map((group, groupIndex) => (
-                <div
-                  key={groupIndex}
-                  className="mb-4 bg-gray-50 p-3 rounded border"
-                >
-                  <h4 className="font-medium mb-2">{group.title}</h4>
-                  <div className="space-y-2">
-                    {group.emojis.map((emojiItem, emojiIndex) => (
+            {/* Mostrar primero el grupo de participación destacado */}
+            {participacionGroup && (
+              <div className="mb-6">
+                <h3 className="font-semibold mb-2 text-blue-600">
+                  Emojis de Participación
+                </h3>
+                <div className="bg-blue-50 p-3 rounded border border-blue-200">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    {participacionGroup.emojis.map((emojiItem, emojiIndex) => (
                       <div
                         key={emojiIndex}
                         className="flex items-center space-x-3 p-2 bg-white rounded"
@@ -258,7 +279,63 @@ const EmojiSettings = ({ isOpen, onClose, onSave }) => {
                     ))}
                   </div>
                 </div>
-              ))}
+              </div>
+            )}
+
+            {/* Otros grupos de emojis */}
+            <div className="mb-6">
+              <h3 className="font-semibold mb-2">Otros Grupos de Emojis</h3>
+              {emojiGroups
+                .filter((group) => group.title !== "Participación")
+                .map((group, groupIndex) => (
+                  <div
+                    key={groupIndex}
+                    className="mb-4 bg-gray-50 p-3 rounded border"
+                  >
+                    <h4 className="font-medium mb-2">{group.title}</h4>
+                    <div className="space-y-2">
+                      {group.emojis.map((emojiItem, emojiIndex) => (
+                        <div
+                          key={emojiIndex}
+                          className="flex items-center space-x-3 p-2 bg-white rounded"
+                        >
+                          <div className="text-2xl min-w-[40px] text-center">
+                            {editingEmojiId === emojiItem.id ? (
+                              <div className="flex space-x-1">
+                                <button
+                                  onClick={() =>
+                                    handleEmojiChange(
+                                      emojiItem.id,
+                                      selectedEmoji
+                                    )
+                                  }
+                                  className="text-green-500 hover:text-green-700 p-1"
+                                  disabled={!selectedEmoji}
+                                >
+                                  <Save size={16} />
+                                </button>
+                                <button
+                                  onClick={() => setEditingEmojiId(null)}
+                                  className="text-red-500 hover:text-red-700 p-1"
+                                >
+                                  <X size={16} />
+                                </button>
+                              </div>
+                            ) : (
+                              <button
+                                onClick={() => setEditingEmojiId(emojiItem.id)}
+                                className="hover:bg-gray-100 p-1 rounded"
+                              >
+                                {getDisplayEmoji(emojiItem)}
+                              </button>
+                            )}
+                          </div>
+                          <span className="flex-grow">{emojiItem.label}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
             </div>
           </>
         )}
@@ -271,14 +348,14 @@ const EmojiSettings = ({ isOpen, onClose, onSave }) => {
               deben ser cuadradas y preferiblemente de 64x64 píxeles.
             </p>
 
-            {emojiGroups.map((group, groupIndex) => (
-              <div
-                key={groupIndex}
-                className="mb-4 bg-gray-50 p-3 rounded border"
-              >
-                <h4 className="font-medium mb-2">{group.title}</h4>
+            {/* Grupo de participación primero */}
+            {participacionGroup && (
+              <div className="mb-4 bg-blue-50 p-3 rounded border border-blue-200">
+                <h4 className="font-medium mb-2 text-blue-600">
+                  {participacionGroup.title}
+                </h4>
                 <div className="space-y-2">
-                  {group.emojis.map((emojiItem, emojiIndex) => (
+                  {participacionGroup.emojis.map((emojiItem, emojiIndex) => (
                     <div
                       key={emojiIndex}
                       className="flex items-center space-x-3 p-2 bg-white rounded"
@@ -318,7 +395,59 @@ const EmojiSettings = ({ isOpen, onClose, onSave }) => {
                   ))}
                 </div>
               </div>
-            ))}
+            )}
+
+            {/* Otros grupos */}
+            {emojiGroups
+              .filter((group) => group.title !== "Participación")
+              .map((group, groupIndex) => (
+                <div
+                  key={groupIndex}
+                  className="mb-4 bg-gray-50 p-3 rounded border"
+                >
+                  <h4 className="font-medium mb-2">{group.title}</h4>
+                  <div className="space-y-2">
+                    {group.emojis.map((emojiItem, emojiIndex) => (
+                      <div
+                        key={emojiIndex}
+                        className="flex items-center space-x-3 p-2 bg-white rounded"
+                      >
+                        <div className="text-2xl min-w-[40px] text-center">
+                          {getDisplayEmoji(emojiItem)}
+                        </div>
+                        <div className="flex-grow">
+                          <div className="flex items-center space-x-2">
+                            <input
+                              type="text"
+                              placeholder="URL de imagen (https://...)"
+                              value={imageURLs[emojiItem.id] || ""}
+                              onChange={(e) =>
+                                handleAddImageURL(emojiItem.id, e.target.value)
+                              }
+                              className="w-full p-1 text-sm border border-gray-300 rounded"
+                            />
+                            {imageURLs[emojiItem.id] && (
+                              <button
+                                onClick={() => {
+                                  const newImageURLs = { ...imageURLs };
+                                  delete newImageURLs[emojiItem.id];
+                                  setImageURLs(newImageURLs);
+                                }}
+                                className="text-red-500 hover:text-red-700"
+                              >
+                                <X size={16} />
+                              </button>
+                            )}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {emojiItem.label}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
           </div>
         )}
 

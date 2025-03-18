@@ -12,6 +12,7 @@ export const EmojisProvider = ({ children }) => {
   const [customEmojis, setCustomEmojis] = useState({});
   const [customEmojiGroups, setCustomEmojiGroups] = useState([]);
   const [emojiImages, setEmojiImages] = useState({});
+  const [updateCounter, setUpdateCounter] = useState(0); // Contador para forzar actualizaciones
 
   // Cargar datos personalizados al inicio
   useEffect(() => {
@@ -65,6 +66,9 @@ export const EmojisProvider = ({ children }) => {
 
   // Obtener grupos de emojis actualizados con los personalizados
   const getEmojiGroups = () => {
+    // Usar updateCounter para forzar la regeneración
+    console.log("Obteniendo grupos de emojis actualizado:", updateCounter);
+
     return customEmojiGroups.map((group) => ({
       ...group,
       emojis: group.emojis.map((emojiItem) => ({
@@ -77,11 +81,16 @@ export const EmojisProvider = ({ children }) => {
 
   // Actualizar el contexto con nuevos emojis personalizados
   const updateCustomEmojis = (newEmojis, newImages, newGroups) => {
+    console.log("Actualizando emojis personalizados");
     setCustomEmojis(newEmojis);
     setEmojiImages(newImages);
+
     if (newGroups && newGroups.length > 0) {
       setCustomEmojiGroups(newGroups);
     }
+
+    // Incrementar el contador para forzar actualización de componentes
+    setUpdateCounter((prev) => prev + 1);
   };
 
   const value = {
@@ -92,6 +101,7 @@ export const EmojisProvider = ({ children }) => {
     renderEmoji,
     getEmojiGroups,
     updateCustomEmojis,
+    updateCounter, // Exponer el contador a los componentes
   };
 
   return (

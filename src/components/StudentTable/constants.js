@@ -14,9 +14,20 @@ export const AREAS = [
 export const EMOJIS = {
   tiempo: "⏰",
   camara: "📷",
-  participacion1: "👕",
-  participacion2: "👚",
-  participacion3: "👔",
+  // Emojis para el grupo Participación (12 en total)
+  participa_excelente: "🔥",
+  participa_bueno: "👏",
+  participa_regular: "👍",
+  participa_atencion: "👀",
+  participa_mano: "✋",
+  participa_aplauso: "🙌",
+  participa_estrella: "⭐",
+  participa_medalla: "🏅",
+  participa_trofeo: "🏆",
+  participa_cerebro: "🧠",
+  participa_idea: "💡",
+  participa_felicitacion: "🎉",
+  // Otros emojis
   preguntas: "🐸",
   casi: "💖",
   energia: "⚡",
@@ -24,6 +35,8 @@ export const EMOJIS = {
   mejorar: "👓",
   sobresaliente: "⭐",
   objetivo: "💙",
+  excelente: "🔥",
+  bienHecho: "👏",
 };
 
 // Grupos de emojis para la selección
@@ -43,19 +56,64 @@ export const EMOJI_GROUPS = [
     title: "Participación",
     emojis: [
       {
-        id: "participacion1",
-        emoji: EMOJIS.participacion1,
-        label: "Participación 1",
+        id: "participa_excelente",
+        emoji: EMOJIS.participa_excelente,
+        label: "Participación excelente",
       },
       {
-        id: "participacion2",
-        emoji: EMOJIS.participacion2,
-        label: "Participación 2",
+        id: "participa_bueno",
+        emoji: EMOJIS.participa_bueno,
+        label: "Buena participación",
       },
       {
-        id: "participacion3",
-        emoji: EMOJIS.participacion3,
-        label: "Participación 3",
+        id: "participa_regular",
+        emoji: EMOJIS.participa_regular,
+        label: "Participación regular",
+      },
+      {
+        id: "participa_atencion",
+        emoji: EMOJIS.participa_atencion,
+        label: "Prestó atención",
+      },
+      {
+        id: "participa_mano",
+        emoji: EMOJIS.participa_mano,
+        label: "Levantó la mano",
+      },
+      {
+        id: "participa_aplauso",
+        emoji: EMOJIS.participa_aplauso,
+        label: "Participación destacada",
+      },
+      {
+        id: "participa_estrella",
+        emoji: EMOJIS.participa_estrella,
+        label: "Participación estelar",
+      },
+      {
+        id: "participa_medalla",
+        emoji: EMOJIS.participa_medalla,
+        label: "Medalla de participación",
+      },
+      {
+        id: "participa_trofeo",
+        emoji: EMOJIS.participa_trofeo,
+        label: "Trofeo de participación",
+      },
+      {
+        id: "participa_cerebro",
+        emoji: EMOJIS.participa_cerebro,
+        label: "Participación inteligente",
+      },
+      {
+        id: "participa_idea",
+        emoji: EMOJIS.participa_idea,
+        label: "Aportó ideas",
+      },
+      {
+        id: "participa_felicitacion",
+        emoji: EMOJIS.participa_felicitacion,
+        label: "Felicitaciones",
       },
     ],
   },
@@ -102,6 +160,16 @@ export const EMOJI_GROUPS = [
         id: "objetivo",
         emoji: EMOJIS.objetivo,
         label: "Cumplió con el objetivo de la semana",
+      },
+      {
+        id: "excelente",
+        emoji: EMOJIS.excelente,
+        label: "Excelente participación",
+      },
+      {
+        id: "bienHecho",
+        emoji: EMOJIS.bienHecho,
+        label: "Buen trabajo",
       },
     ],
   },
