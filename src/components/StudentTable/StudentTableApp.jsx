@@ -530,7 +530,7 @@ const StudentTableApp = ({ classId, onReturnToDashboard }) => {
             >
               <div className="overflow-x-auto">
                 <table className="border-collapse w-full">
-                  <StudentTableHeader />
+                  <StudentTableHeader classId={classId} />
                   <tbody>
                     {students.length > 0 ? (
                       students.map((student) => (
