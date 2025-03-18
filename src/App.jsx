@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import StudentTableApp from "./components/StudentTable/StudentTableApp";
 import Dashboard from "./components/Dashboard/Dashboard";
+import EmojisProvider from "./components/StudentTable/EmojisProvider";
 
 function App() {
   // Estado para controlar la vista actual (dashboard o clase específica)
@@ -20,16 +21,18 @@ function App() {
   };
 
   return (
-    <div className="app">
-      {activeView === "dashboard" ? (
-        <Dashboard onClassSelect={handleClassSelect} />
-      ) : (
-        <StudentTableApp
-          classId={selectedClassId}
-          onReturnToDashboard={handleReturnToDashboard}
-        />
-      )}
-    </div>
+    <EmojisProvider>
+      <div className="app">
+        {activeView === "dashboard" ? (
+          <Dashboard onClassSelect={handleClassSelect} />
+        ) : (
+          <StudentTableApp
+            classId={selectedClassId}
+            onReturnToDashboard={handleReturnToDashboard}
+          />
+        )}
+      </div>
+    </EmojisProvider>
   );
 }
 

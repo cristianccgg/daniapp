@@ -9,13 +9,14 @@ import {
 } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 import { restrictToParentElement } from "@dnd-kit/modifiers";
-import { Edit, Save, X } from "lucide-react";
+import { Edit, Save, X, Settings } from "lucide-react";
 
 // Componentes
 import StudentTableHeader from "./StudentTableHeader";
 import StudentRow from "./StudentRow";
 import CombinedEmojiPanel from "./CombinedEmojiPanel";
 import ActionButtons from "./ActionButtons";
+import EmojiSettings from "../Settings/EmojiSettings";
 
 // Utilidades y constantes
 import { EMOJIS, EMOJI_GROUPS } from "./constants";
@@ -24,8 +25,15 @@ import {
   loadFromLocalStorage,
   saveToLocalStorage,
 } from "./utils";
+import { useEmojis } from "./EmojisProvider";
 
 const StudentTableApp = ({ classId, onReturnToDashboard }) => {
+  // Contexto de emojis
+  const { getEmojiGroups, updateCustomEmojis } = useEmojis();
+
+  // Estado para la ventana de configuración de emojis
+  const [showEmojiSettings, setShowEmojiSettings] = useState(false);
+
   // Estado de la clase actual (valores por defecto)
   const defaultClassInfo = {
     id: classId,
@@ -85,7 +93,8 @@ const StudentTableApp = ({ classId, onReturnToDashboard }) => {
   // Inicializar emojis disponibles
   useEffect(() => {
     // Inicializar emojis disponibles desde los grupos
-    const allEmojis = EMOJI_GROUPS.flatMap((group) =>
+    const emojiGroups = getEmojiGroups();
+    const allEmojis = emojiGroups.flatMap((group) =>
       group.emojis.map((item) => ({
         id: item.id,
         emoji: item.emoji,
@@ -97,7 +106,7 @@ const StudentTableApp = ({ classId, onReturnToDashboard }) => {
 
     // Inicializar el estado temporal con los valores actuales
     setTempClassInfo(classInfo);
-  }, [classInfo]);
+  }, [classInfo, getEmojiGroups]);
 
   // Guardar en localStorage cuando cambian los datos
   useEffect(() => {
@@ -214,6 +223,7 @@ const StudentTableApp = ({ classId, onReturnToDashboard }) => {
       const emojiInfo = availableEmojis.find((e) => e.id === emojiTypeId);
 
       if (emojiInfo) {
+        // Usar el tipo de emoji para guardar la referencia, no solo el emoji visual
         setStudents((prevStudents) =>
           prevStudents.map((student) =>
             student.id === studentId
@@ -224,7 +234,7 @@ const StudentTableApp = ({ classId, onReturnToDashboard }) => {
                     {
                       id: `participacion-${Date.now()}`, // ID único para cada emoji de participación
                       emoji: emojiInfo.emoji,
-                      type: emojiInfo.id,
+                      type: emojiTypeId, // Guardar el tipo de emoji para referencia posterior
                     },
                   ],
                 }
@@ -336,10 +346,31 @@ const StudentTableApp = ({ classId, onReturnToDashboard }) => {
     setEditingTema(false);
   };
 
+  // Manejar guardado de configuración de emojis
+  const handleSaveEmojiSettings = ({
+    customEmojis,
+    imageURLs,
+    emojiGroups,
+  }) => {
+    updateCustomEmojis(customEmojis, imageURLs, emojiGroups);
+
+    // Refrescar emojis disponibles
+    const updatedGroups = getEmojiGroups();
+    const updatedEmojis = updatedGroups.flatMap((group) =>
+      group.emojis.map((item) => ({
+        id: item.id,
+        emoji: item.emoji,
+        label: item.label,
+      }))
+    );
+
+    setAvailableEmojis(updatedEmojis);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="w-full mx-auto bg-white rounded-lg shadow-lg p-6">
-        {/* Encabezado y botón de Dashboard */}
+        {/* Encabezado y botones de Dashboard y Configuración*/}
         <div className="flex justify-between items-center mb-6">
           <button
             onClick={onReturnToDashboard}
@@ -348,7 +379,13 @@ const StudentTableApp = ({ classId, onReturnToDashboard }) => {
             Ir al Dashboard
           </button>
           <h1 className="text-3xl font-bold text-center">{classInfo.name}</h1>
-          <div></div>
+          <button
+            onClick={() => setShowEmojiSettings(true)}
+            className="px-4 py-2 bg-indigo-500 text-white rounded hover:bg-indigo-600 transition-colors flex items-center"
+          >
+            <Settings size={18} className="mr-2" />
+            Configurar Emojis
+          </button>
         </div>
 
         {/* Información de la clase */}
@@ -560,6 +597,13 @@ const StudentTableApp = ({ classId, onReturnToDashboard }) => {
           clearAll={clearAll}
         />
       </div>
+
+      {/* Modal de configuración de emojis */}
+      <EmojiSettings
+        isOpen={showEmojiSettings}
+        onClose={() => setShowEmojiSettings(false)}
+        onSave={handleSaveEmojiSettings}
+      />
     </div>
   );
 };

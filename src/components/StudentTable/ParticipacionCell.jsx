@@ -20,7 +20,7 @@ const ParticipacionCell = ({
 
   return (
     <div
-      className="min-h-10 flex flex-wrap gap-1 p-1 border border-gray-200 rounded"
+      className="min-h-14 flex flex-wrap gap-2 p-2 border border-gray-200 rounded"
       onClick={() => onCellClick(studentId)}
       id={`student-${studentId}`}
     >
@@ -34,6 +34,7 @@ const ParticipacionCell = ({
               key={participacionItem.id}
               id={participacionItem.id}
               emoji={participacionItem.emoji}
+              type={participacionItem.type}
               onRemove={(e) => handleRemoveEmoji(e, participacionItem.id)}
             />
           ))}

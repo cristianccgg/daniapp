@@ -1,8 +1,8 @@
 // src/components/StudentTable/CombinedEmojiPanel.jsx
 import React from "react";
 import { RefreshCw } from "lucide-react";
-import { EMOJI_GROUPS } from "./constants";
 import { DraggableEmoji } from "./EmojiItem";
+import { useEmojis } from "./EmojisProvider";
 
 const CombinedEmojiPanel = ({
   participacionEmojis,
@@ -11,6 +11,9 @@ const CombinedEmojiPanel = ({
   selectedEmoji,
   handleEmojiSelect,
 }) => {
+  const { getEmojiGroups, getEmojiImage } = useEmojis();
+  const emojiGroups = getEmojiGroups();
+
   return (
     <div className="bg-gray-100 p-4 rounded-lg">
       <h3 className="font-bold mb-4 text-center">Emojis y Significado</h3>
@@ -33,7 +36,7 @@ const CombinedEmojiPanel = ({
 
       {/* Grupos de emojis con significado y función de arrastre */}
       <div className="space-y-4">
-        {EMOJI_GROUPS.map((group) => (
+        {emojiGroups.map((group) => (
           <div key={group.title} className="bg-white p-2 rounded shadow">
             <h4 className="font-semibold text-sm mb-2">{group.title}</h4>
             {group.emojis.map((emojiItem) => (
